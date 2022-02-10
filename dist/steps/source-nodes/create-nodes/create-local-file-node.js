@@ -310,7 +310,6 @@ const createLocalFileNode = async ({
       const node = await (0, _index.default)({
         url: mediaItemUrl,
         auth,
-        httpOpts,
         ...createFileNodeRequirements,
         pluginOptions
       });

@@ -86,9 +86,6 @@ const defaultPluginOptions = {
       password: null
     }
   },
-  httpOpts: {
-    agent: null
-  },
   schema: {
     queryDepth: 15,
     circularQueryLimit: 5,
@@ -156,6 +153,9 @@ const defaultPluginOptions = {
       createFileNodes: true,
       localFile: {
         excludeByMimeTypes: [],
+        httpOptions: {
+          agent: null
+        },
         maxFileSizeBytes: 15728640,
         // 15Mb
         requestConcurrency: 100
