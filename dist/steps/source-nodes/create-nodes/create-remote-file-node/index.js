@@ -164,13 +164,13 @@ async function pushToQueue(task, cb) {
  * @param  {String}   url
  * @param  {Headers}  headers
  * @param  {String}   tmpFilename
- * @param  {Object}    httpOptions
+ * @param  {Object}   httpOpts
  * @param  {number}   attempt
  * @return {Promise<Object>}  Resolves with the [http Result Object]{@link https://nodejs.org/api/http.html#http_class_http_serverresponse}
  */
 
 
-const requestRemoteNode = (url, headers, tmpFilename, httpOptions, attempt = 1) => new Promise((resolve, reject) => {
+const requestRemoteNode = (url, headers, tmpFilename, httpOpts, attempt = 1) => new Promise((resolve, reject) => {
   let timeout; // Called if we stall without receiving any data
 
   const handleTimeout = async () => {
@@ -179,7 +179,7 @@ const requestRemoteNode = (url, headers, tmpFilename, httpOptions, attempt = 1) 
 
     if (attempt < STALL_RETRY_LIMIT) {
       // Retry by calling ourself recursively
-      resolve(requestRemoteNode(url, headers, tmpFilename, httpOptions, attempt + 1));
+      resolve(requestRemoteNode(url, headers, tmpFilename, httpOpts, attempt + 1));
     } else {
       processingCache[url] = null;
       totalJobs -= 1;
@@ -201,7 +201,7 @@ const requestRemoteNode = (url, headers, tmpFilename, httpOptions, attempt = 1) 
     timeout: {
       send: CONNECTION_TIMEOUT
     },
-    ...httpOptions
+    ...httpOpts
   });
   const fsWriteStream = fs.createWriteStream(tmpFilename);
   responseStream.pipe(fsWriteStream); // If there's a 400/500 response or other error.
@@ -255,7 +255,7 @@ async function processRemoteNode({
   createNode,
   parentNodeId,
   auth = {},
-  httpOptions = {},
+  httpOpts = {},
   httpHeaders = {},
   createNodeId,
   ext,
@@ -291,7 +291,7 @@ async function processRemoteNode({
 
   const tmpFilename = createFilePath(pluginCacheDir, `tmp-${digest}`, ext); // Fetch the file.
 
-  const response = await requestRemoteNode(url, headers, tmpFilename, httpOptions);
+  const response = await requestRemoteNode(url, headers, tmpFilename, httpOpts);
 
   if (response.statusCode == 200) {
     // Save the response headers for future requests.
@@ -390,12 +390,9 @@ module.exports = ({
   reporter,
   pluginOptions
 }) => {
-  var _pluginOptions$type, _pluginOptions$type$M;
+  var _pluginOptions$type, _pluginOptions$type$M, _pluginOptions$type$M2;
 
-  const {
-    requestConcurrency: limit,
-    httpOptions = {}
-  } = (pluginOptions === null || pluginOptions === void 0 ? void 0 : (_pluginOptions$type = pluginOptions.type) === null || _pluginOptions$type === void 0 ? void 0 : (_pluginOptions$type$M = _pluginOptions$type.MediaItem) === null || _pluginOptions$type$M === void 0 ? void 0 : _pluginOptions$type$M.localFile) || {};
+  const limit = pluginOptions === null || pluginOptions === void 0 ? void 0 : (_pluginOptions$type = pluginOptions.type) === null || _pluginOptions$type === void 0 ? void 0 : (_pluginOptions$type$M = _pluginOptions$type.MediaItem) === null || _pluginOptions$type$M === void 0 ? void 0 : (_pluginOptions$type$M2 = _pluginOptions$type$M.localFile) === null || _pluginOptions$type$M2 === void 0 ? void 0 : _pluginOptions$type$M2.requestConcurrency;
 
   if (doneQueueTimeout) {
     // this is to give the bar a little time to wait when there are pauses
