@@ -284,6 +284,8 @@ const createLocalFileNode = async ({
   if (!remoteFileNode) {
     // Otherwise we need to download it
     remoteFileNode = await (0, _asyncRetry.default)(async () => {
+      var _htaccessCredentials, _htaccessCredentials2;
+
       if (fetchState.shouldBail) {
         failedImageUrls.add(mediaItemUrl);
         return null;
@@ -295,16 +297,14 @@ const createLocalFileNode = async ({
 
       const {
         hostname: mediaItemHostname
-      } = _url.default.parse(mediaItemUrl);
-
-      const htaccessCredentials = pluginOptions.auth.htaccess; // if media items are hosted on another url like s3,
+      } = _url.default.parse(mediaItemUrl); // if media items are hosted on another url like s3,
       // using the htaccess creds will throw 400 errors
 
+
       const shouldUseHtaccessCredentials = wpUrlHostname === mediaItemHostname;
-      const httpOpts = pluginOptions.httpOpts;
       const auth = htaccessCredentials && shouldUseHtaccessCredentials ? {
-        htaccess_pass: htaccessCredentials === null || htaccessCredentials === void 0 ? void 0 : htaccessCredentials.password,
-        htaccess_user: htaccessCredentials === null || htaccessCredentials === void 0 ? void 0 : htaccessCredentials.username
+        htaccess_pass: (_htaccessCredentials = htaccessCredentials) === null || _htaccessCredentials === void 0 ? void 0 : _htaccessCredentials.password,
+        htaccess_user: (_htaccessCredentials2 = htaccessCredentials) === null || _htaccessCredentials2 === void 0 ? void 0 : _htaccessCredentials2.username
       } : null; // if this errors, it's caught one level above in fetch-referenced-media-items.js so it can be placed on the end of the request queue
 
       const node = await (0, _index.default)({
